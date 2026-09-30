@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniAura.in - Deep Words & Dark Shayari</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="OmniAura.in par padhiye behtareen Dark Shayari, Deep Words, Attitude Shayari, aur Sad Shayari. Apne vichar share karein aur jude rahein.">
+    <meta name="keywords" content="Dark Shayari, Deep Words, OmniAura, Hindi Shayari, Attitude Shayari, Sad Shayari">
+    <meta name="author" content="OmniAura.in">
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("-COkhB4W2GGQ9-YmA");
+        })();
+    </script>
+    <style>
+        :root {
+            --bg-color: #030712;        
+            --card-bg: #111827;         
+            --text-main: #f3f4f6;       
+            --text-muted: #9ca3af;      
+            --border-color: #1f2937;    
+            --secondary-color: #38bdf8; 
+            --header-bg: linear-gradient(135deg, #0f172a, #1e1b4b);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;        
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --secondary-color: #0284c7;
+            --header-bg: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 15px;
+        }
+        
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        header {
+            background: var(--header-bg);
+            color: var(--text-main);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .logo-area h1 { font-size: 2.5rem; font-weight: 800; }
+        .logo-area h1 span { color: var(--secondary-color); }
+        .logo-area p { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+
+        .header-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+        }
+        
+        .controls {
+            padding: 15px 30px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 6px;
+            outline: none;
+        }
+        
+        .controls select, .controls button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        
+        .btn-refresh { background-color: #4f46e5; color: white; }
+        .btn-admin { background-color: #d97706; color: white; display: none; margin-left: auto; }
+        
+        .shayari-container { padding: 30px; min-height: 350px; }
+        
+        .shayari-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--secondary-color);
+            padding: 22px 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+        
+        .card-header-meta { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .category-tag { background: rgba(56, 189, 248, 0.1); color: var(--secondary-color); padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+        .views-count { font-size: 0.75rem; color: var(--text-muted); }
+
+        .post-image { width: 100%; max-height: 380px; object-fit: cover; border-radius: 6px; margin-bottom: 15px; }
+
+        .shayari-text {
+            color: var(--text-main);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            white-space: pre-line;
+            margin-bottom: 15px;
+            font-family: Georgia, serif;
+        }
+        
+        .card-footer { display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 12px; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-action { background: var(--border-color); color: var(--text-main); border: none; padding: 6px 12px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-action:hover { background: var(--secondary-color); color: #030712; }
+        
+        .admin-controls { display: none; gap: 6px; }
+        .btn-delete { background-color: #ef4444 !important; color: white !important; }
+        .btn-edit { background-color: #eab308 !important; color: #030712 !important; font-weight: 700; }
+
+        .share-buttons { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-share { background: #1f2937; color: #38bdf8; font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; text-decoration: none; border: 1px solid var(--border-color); }
+        .btn-share:hover { background: #38bdf8; color: #030712; }
+
+        .comments-section { margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 15px; }
+        .comments-list { margin-bottom: 12px; max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .comment-item { font-size: 0.85rem; background: var(--bg-color); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .comment-item strong { color: var(--secondary-color); margin-right: 5px; }
+
+        .comment-form-container { display: flex; flex-direction: column; gap: 6px; background: var(--bg-color); padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; }
+        .comment-name-input, .comment-text-input { width: 100%; padding: 6px 10px; font-size: 0.8rem; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 5px; outline: none; }
+        .comment-submit-btn { padding: 6px 12px; font-size: 0.8rem; background: var(--secondary-color); color: #030712; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; align-self: flex-end; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); justify-content: center; align-items: center; z-index: 9999; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px; border-radius: 12px; width: 90%; max-width: 420px; }
+        .modal-content input, .modal-content textarea, .modal-content select { width: 100%; padding: 10px 14px; margin: 8px 0 16px 0; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; outline: none; }
+        .modal-content button { width: 100%; padding: 10px; background: var(--secondary-color); color: #030712; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .close-btn { background: #ef4444 !important; color: white !important; margin-top: 8px !important; }
+        
+        footer { background: var(--card-bg); color: var(--text-muted); text-align: center; padding: 25px 20px; font-size: 0.85rem; border-top: 1px solid var(--border-color); }
+        .social-links { display: flex; justify-content: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .social-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-decoration: none; border: 1px solid var(--border-color); color: var(--text-main); background: var(--bg-color); }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
+            </div>
+            <div class="logo-container" onclick="handleLogoClick()">
+                <div class="logo-area">
+                    <h1>Omni<span>Aura</span>.in</h1>
+                    <p>Deep Words • Dark Shayari • Attitude</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="controls">
+            <div class="btn-group">
+                <input type="text" id="searchInput" class="search-box" placeholder="🔍 शायरी या शब्द खोजें..." onkeyup="filterShayari()">
+                <select id="categoryFilter" class="filter-select" onchange="filterShayari()">
+                    <option value="ALL">सभी कैटेगरी</option>
+                    <option value="Dark Shayari">Dark Shayari</option>
+                    <option value="Deep Words">Deep Words</option>
+                    <option value="Attitude">Attitude</option>
+                    <option value="Sad">Sad</option>
+                    <option value="Romantic">Romantic</option>
+                    <option value="Friendship">Friendship</option>
+                    <option value="Bewafa">Bewafa</option>
+                </select>
+                <button class="btn-refresh" onclick="refreshShayari()">🔄 रिफ्रेश</button>
+                <button class="btn-admin" id="add-shayari-btn" onclick="openAddModal()">➕ नई पोस्ट जोड़ें</button>
+            </div>
+        </div>
+        
+        <div class="shayari-container" id="shayari-content">शायरियां लोड हो रही हैं...</div>
+        
+        <footer>
+            <div class="social-links">
+                <a href="https://www.instagram.com/omniaura.in" target="_blank" class="social-btn">📷 Instagram</a>
+                <a href="https://whatsapp.com" target="_blank" class="social-btn">💬 WhatsApp</a>
+                <a href="https://youtube.com/@omniauradarkwords" target="_blank" class="social-btn">▶️ YouTube</a>
+                <a href="https://www.facebook.com" target="_blank" class="social-btn">🌐 Facebook</a>
+            </div>
+            <p>&copy; 2026 OmniAura.in. All Rights Reserved</p>
+        </footer>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content" id="loginStep1">
+            <h3>एडमिन लॉगिन</h3>
+            <input type="text" id="username" placeholder="यूजरनेम दर्ज करें">
+            <input type="password" id="password" placeholder="पासवर्ड दर्ज करें">
+            <button onclick="requestOTP()">OTP भेजें</button>
+            <button class="close-btn" onclick="closeLoginModal()">रद्द करें</button>
+        </div>
+        <div class="modal-content" id="loginStep2" style="display: none;">
+            <h3>OTP दर्ज करें</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;" id="otpInfoText">OTP आपके जीमेल <b>omniaur@gmail.com</b> पर भेज दिया गया है।</p>
+            <input type="text" id="otpInput" placeholder="6-digit OTP दर्ज करें">
+            <button onclick="verifyOTP()">OTP वेरिफाई करें</button>
+            <button class="close-btn" onclick="closeLoginModal()">रद्द करें</button>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT POST MODAL -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">नई पोस्ट पब्लिश करें</h3>
+            <input type="hidden" id="editDocId" value="">
+            <select id="newCategory">
+                <option value="Dark Shayari">Dark Shayari</option>
+                <option value="Deep Words">Deep Words</option>
+                <option value="Attitude">Attitude</option>
+                <option value="Sad">Sad</option>
+                <option value="Romantic">Romantic</option>
+                <option value="Friendship">Friendship</option>
+                <option value="Bewafa">Bewafa</option>
+            </select>
+            
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 5px;">फोटो चुनें (वैकल्पिक):</label>
+            <input type="file" id="imageFileInput" accept="image/*">
+
+            <textarea id="newText" placeholder="अपनी शायरी यहाँ लिखें..." rows="4"></textarea>
+            <button id="saveBtn" onclick="saveShayariData()">पब्लिश करें</button>
+            <button class="close-btn" onclick="closeAddModal()">बंद करें</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, increment, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8rwG8rCk9JYDljjhbjgrjp-paU-3s1jI",
+            authDomain: "omniaura-in.firebaseapp.com",
+            projectId: "omniaura-in",
+            storageBucket: "omniaura-in.firebasestorage.app",
+            messagingSenderId: "1089080974870",
+            appId: "1:1089080974870:web:21746b784dafa8ab1b1f37",
+            measurementId: "G-WEZSR6E7ZJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let shayariList = [];
+        let isLoggedIn = localStorage.getItem('omniaura_loggedin') === 'true';
+        let generatedOTP = "";
+        let logoClickCount = 0;
+
+        window.loadShayari = async function(filteredData = null) {
+            const container = document.getElementById('shayari-content');
+            
+            if (!filteredData) {
+                try {
+                    const q = query(collection(db, "shayaris"), orderBy("createdAt", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    shayariList = [];
+                    querySnapshot.forEach((documentSnap) => {
+                        shayariList.push({ id: documentSnap.id, ...documentSnap.data() });
+                    });
+                } catch (e) {
+                    console.error("Error loading: ", e);
+                    try {
+                        const querySnapshot = await getDocs(collection(db, "shayaris"));
+                        shayariList = [];
+                        querySnapshot.forEach((documentSnap) => {
+                            shayariList.push({ id: documentSnap.id, ...documentSnap.data() });
+                        });
+                    } catch (err) {
+                        console.error("Fallback loading error: ", err);
+                    }
+                }
+
+                // यदि डेटाबेस बिल्कुल खाली है, तो अपने आप एक डिफ़ॉल्ट शायरी जोड़ दें ताकि पेज खाली न दिखे
+                if (shayariList.length === 0) {
+                    try {
+                        const defaultPost = {
+                            category: "Dark Shayari",
+                            image: "",
+                            text: "अंधेरों से दोस्ती कुछ इस तरह हो गई,\nकि उजाला भी अब हमें डराने लगा है।\n\n- OmniAura.in",
+                            likes: 1,
+                            views: 10,
+                            comments: [{ name: "Admin", text: "स्वागत है आपका OmniAura.in पर!" }],
+                            createdAt: new Date()
+                        };
+                        const docRef = await addDoc(collection(db, "shayaris"), defaultPost);
+                        shayariList.push({ id: docRef.id, ...defaultPost });
+                    } catch (ex) {
+                        console.error("Default post auto-add error:", ex);
+                    }
+                }
+            }
+
+            const dataToRender = filteredData || shayariList;
+            let html = '';
+            
+            if (dataToRender.length === 0) {
+                container.innerHTML = `<h2>कोई कंटेंट उपलब्ध नहीं है</h2>`;
+                document.getElementById('add-shayari-btn').style.display = isLoggedIn ? "inline-block" : "none";
+                return;
+            }
+
+            dataToRender.forEach((item) => {
+                let imageHtml = item.image ? `<img src="${item.image}" class="post-image">` : '';
+                let comments = item.comments || [];
+                let commentsHtml = comments.map(c => `<div class="comment-item"><strong>${c.name}:</strong> ${c.text}</div>`).join('') || `<div class="comment-item" style="color:var(--text-muted)">कोई कमेंट नहीं।</div>`;
+                let encodedText = encodeURIComponent(item.text || '');
+
+                html += `
+                    <div class="shayari-card">
+                        <div class="card-header-meta">
+                            <span class="category-tag">${item.category || 'Shayari'}</span>
+                            <span class="views-count">👁 ${item.views || 10} बार देखा गया</span>
+                        </div>
+                        ${imageHtml}
+                        <div class="shayari-text">${item.text || ''}</div>
+                        
+                        <div class="share-buttons">
+                            <a href="https://api.whatsapp.com/send?text=${encodedText}%0A%0A-%20Shared%20via%20OmniAura.in" target="_blank" class="btn-share">💬 WhatsApp</a>
+                            <a href="https://t.me/share/url?url=https://omniaura.in&text=${encodedText}" target="_blank" class="btn-share">✈ Telegram</a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u=https://omniaura.in" target="_blank" class="btn-share">🌐 Facebook</a>
+                        </div>
+
+                        <div class="card-footer" style="margin-top: 12px;">
+                            <div class="action-buttons">
+                                <button class="btn-action" onclick="likeShayari('${item.id}')">❤️ लाइक (${item.likes || 0})</button>
+                                <button class="btn-action" onclick="copyText('${encodedText}')">📋 कॉपी</button>
+                            </div>
+                            <div class="admin-controls" id="admin-controls-${item.id}" style="display: ${isLoggedIn ? 'flex' : 'none'};">
+                                <button class="btn-action btn-edit" onclick="openEditModal('${item.id}')">✏️ एडिट</button>
+                                <button class="btn-action btn-delete" onclick="deleteShayari('${item.id}')">🗑 डिलीट</button>
+                            </div>
+                        </div>
+
+                        <div class="comments-section">
+                            <div class="comments-list">${commentsHtml}</div>
+                            <div class="comment-form-container">
+                                <input type="text" class="comment-name-input" id="c-name-${item.id}" placeholder="आपका नाम...">
+                                <textarea class="comment-text-input" id="c-text-${item.id}" placeholder="अपना कमेंट लिखें..."></textarea>
+                                <button class="comment-submit-btn" onclick="addComment('${item.id}')">कमेंट भेजें</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById('add-shayari-btn').style.display = isLoggedIn ? "inline-block" : "none";
+        };
+
+        window.saveShayariData = async function() {
+            if (!isLoggedIn) {
+                alert("अनुमति नहीं है! केवल एडमिन ही नई पोस्ट जोड़ सकता है।");
+                return;
+            }
+
+            const docId = document.getElementById('editDocId').value;
+            const category = document.getElementById('newCategory').value;
+            const text = document.getElementById('newText').value.trim();
+            const fileInput = document.getElementById('imageFileInput');
+            
+            if (!text) { alert("कृपया कुछ शायरी लिखें!"); return; }
+
+            let existingImage = "";
+            if (docId !== "") {
+                const currentItem = shayariList.find(i => i.id === docId);
+                if (currentItem) existingImage = currentItem.image || "";
+            }
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const imageDataUrl = e.target.result;
+                    await processDBSave(docId, category, imageDataUrl, text);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                await processDBSave(docId, category, existingImage, text);
+            }
+        };
+
+        async function processDBSave(docId, category, image, text) {
+            try {
+                if (docId === "") {
+                    await addDoc(collection(db, "shayaris"), {
+                        category,
+                        image,
+                        text,
+                        likes: 0,
+                        views: 1,
+                        comments: [],
+                        createdAt: new Date()
+                    });
+                    alert("शायरी सफलतापूर्वक पब्लिश हो गई!");
+                } else {
+                    const shayariRef = doc(db, "shayaris", docId);
+                    await updateDoc(shayariRef, { category, image, text });
+                    alert("शायरी सफलतापूर्वक अपडेट हो गई!");
+                }
+                closeAddModal();
+                loadShayari();
+            } catch (e) {
+                console.error("Error saving data: ", e);
+                alert("डेटा सेव करने में एरर आया! कृपया अपने Firestore Database Rules चेक करें कि वहाँ 'allow read, write: if true;' सेट है या नहीं।");
+            }
+        }
+
+        window.likeShayari = async function(docId) {
+            try {
+                const ref = doc(db, "shayaris", docId);
+                await updateDoc(ref, { likes: increment(1) });
+                loadShayari();
+            } catch (e) {
+                console.error("Error liking: ", e);
+            }
+        };
+
+        window.deleteShayari = async function(docId) {
+            if (!isLoggedIn) { alert("अनुमति नहीं है!"); return; }
+            if (confirm("क्या आप वाकई इस पोस्ट को डिलीट करना चाहते हैं?")) {
+                try {
+                    await deleteDoc(doc(db, "shayaris", docId));
+                    loadShayari();
+                } catch (e) {
+                    console.error("Error deleting: ", e);
+                }
+            }
+        };
+
+        window.addComment = async function(docId) {
+            const nameInput = document.getElementById(`c-name-${docId}`);
+            const textInput = document.getElementById(`c-text-${docId}`);
+            const name = nameInput.value.trim() || "अज्ञात यूजर";
+            const text = textInput.value.trim();
+            if (!text) { alert("कृपया कमेंट बॉक्स में कुछ लिखें!"); return; }
+            
+            try {
+                const targetItem = shayariList.find(i => i.id === docId);
+                const updatedComments = targetItem.comments ? [...targetItem.comments, { name, text }] : [{ name, text }];
+                
+                const ref = doc(db, "shayaris", docId);
+                await updateDoc(ref, { comments: updatedComments });
+                loadShayari();
+            } catch (e) {
+                console.error("Error adding comment: ", e);
+            }
+        };
+
+        window.filterShayari = function() {
+            const queryText = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('categoryFilter').value;
+            const filtered = shayariList.filter(item => {
+                let matchCat = (cat === 'ALL' || item.category === cat);
+                let matchText = (item.text || '').toLowerCase().includes(queryText);
+                return matchCat && matchText;
+            });
+            loadShayari(filtered);
+        };
+
+        window.refreshShayari = function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = 'ALL';
+            loadShayari();
+        };
+
+        window.handleLogoClick = function() {
+            logoClickCount++;
+            if (logoClickCount === 3) {
+                logoClickCount = 0;
+                openLoginModal();
+            }
+            setTimeout(() => { logoClickCount = 0; }, 1000);
+        };
+
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'a') {
+                event.preventDefault();
+                openLoginModal();
+            }
+        });
+
+        window.toggleTheme = function() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            if (isLight) {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('themeToggleBtn').innerText = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeToggleBtn').innerText = '☀';
+            }
+        };
+
+        window.openLoginModal = function() {
+            if (isLoggedIn) {
+                if (confirm("लॉग आउट करना चाहते हैं?")) {
+                    isLoggedIn = false;
+                    localStorage.removeItem('omniaura_loggedin');
+                    loadShayari();
+                    alert("लॉग आउट हो गए।");
+                }
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        };
+        window.closeLoginModal = function() { document.getElementById('loginModal').style.display = 'none'; };
+
+        window.requestOTP = function() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+            
+            if (user === "omniaura.in" && pass === "ganeshbalram") {
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                let templateParams = { passcode: generatedOTP, to_email: "omniaur@gmail.com" };
+
+                alert("OTP भेजा जा रहा है, कृपया प्रतीक्षा करें...");
+                emailjs.send('Dark_shayari', 'template_wzjouy4', templateParams)
+                    .then(function() {
+                        alert("OTP आपके जीमेल पर भेज दिया गया है!");
+                        document.getElementById('loginStep1').style.display = 'none';
+                        document.getElementById('loginStep2').style.display = 'block';
+                    }, function(error) {
+                        alert("OTP भेजने में एरर आया।");
+                    });
+            } else {
+                alert("गलत यूजरनेम या पासवर्ड!");
+            }
+        };
+
+        window.verifyOTP = function() {
+            if (document.getElementById('otpInput').value.trim() === generatedOTP) {
+                isLoggedIn = true;
+                localStorage.setItem('omniaura_loggedin', 'true');
+                alert("लॉगिन सफल रहा! अब आप नई पोस्ट जोड़ सकते हैं।");
+                closeLoginModal();
+                loadShayari();
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('otpInput').value = '';
+                document.getElementById('loginStep1').style.display = 'block';
+                document.getElementById('loginStep2').style.display = 'none';
+            } else {
+                alert("गलत OTP!");
+            }
+        };
+
+        window.openAddModal = function() {
+            if (!isLoggedIn) { alert("अनुमति नहीं है!"); return; }
+            document.getElementById('modalTitle').innerText = "नई पोस्ट पब्लिश करें";
+            document.getElementById('saveBtn').innerText = "पब्लिश करें";
+            document.getElementById('editDocId').value = "";
+            document.getElementById('newCategory').value = "Dark Shayari";
+            document.getElementById('imageFileInput').value = "";
+            document.getElementById('newText').value = "";
+            document.getElementById('addModal').style.display = 'flex';
+        };
+
+        window.openEditModal = function(docId) {
+            if (!isLoggedIn) { alert("अनुमति नहीं है!"); return; }
+            const item = shayariList.find(i => i.id === docId);
+            if (!item) return;
+            document.getElementById('modalTitle').innerText = "शायरी एडिट करें";
+            document.getElementById('saveBtn').innerText = "अपडेट करें";
+            document.getElementById('editDocId').value = docId;
+            document.getElementById('newCategory').value = item.category || "Dark Shayari";
+            document.getElementById('imageFileInput').value = "";
+            document.getElementById('newText').value = item.text || "";
+            document.getElementById('addModal').style.display = 'flex';
+        };
+
+        window.closeAddModal = function() { document.getElementById('addModal').style.display = 'none'; };
+
+        window.copyText = function(encodedText) {
+            navigator.clipboard.writeText(decodeURIComponent(encodedText)).then(() => {
+                alert("शायरी कॉपी हो गई!");
+            });
+        };
+
+        window.onload = function() {
+            loadShayari();
+        };
+    </script>
+</body>
+</html>
