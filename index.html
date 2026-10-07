@@ -295,23 +295,8 @@
             appId: "1:1089080974870:web:21746b784dafa8ab1b1f37",
             measurementId: "G-WEZSR6E7ZJ"
         };
-        const API_URL="https://script.google.com/macros/s/AKfycbyL5wIQoXxopoyDhjC7Dnhr5xWcQaGGJ0ExIBhR7qhpMhLUUyQpztF7eB1EcgKeHnhj-g/exec";
-        
-let generatedOTP = "";
-let logoClickCount = 0;
-        window.handleLogoClick = function() {
-    logoClickCount++;
+    const API_URL="https://script.google.com/macros/s/AKfycbyL5wIQoXxopoyDhjC7Dnhr5xWcQaGGJ0ExIBhR7qhpMhLUUyQpztF7eB1EcgKeHnhj-g/exec";
 
-    if (logoClickCount >= 3) {
-        logoClickCount = 0;
-
-        if (isLoggedIn) {
-            openAddModal();
-        } else {
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-    }
-};
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -408,4 +393,248 @@ let logoClickCount = 0;
                         <div class="comments-section">
                             <div class="comments-list">${commentsHtml}</div>
                             <div class="comment-form-container">
-                                <input type="text" 
+                                <input type="text" class="comment-name-input" id="c-name-${item.id}" placeholder="आपका नाम...">
+                                <textarea class="comment-text-input" id="c-text-${item.id}" placeholder="अपना कमेंट लिखें..."></textarea>
+                                <button class="comment-submit-btn" onclick="addComment('${item.id}')">कमेंट भेजें</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById('add-shayari-btn').style.display = isLoggedIn ? "inline-block" : "none";
+        };
+
+        window.saveShayariData = async function() {
+            if (!isLoggedIn) {
+                alert("अनुमति नहीं है! केवल एडमिन ही नई पोस्ट जोड़ सकता है।");
+                return;
+            }
+
+            const docId = document.getElementById('editDocId').value;
+            const category = document.getElementById('newCategory').value;
+            const text = document.getElementById('newText').value.trim();
+            const fileInput = document.getElementById('imageFileInput');
+            
+            if (!text) { alert("कृपया कुछ शायरी लिखें!"); return; }
+
+            let existingImage = "";
+            if (docId !== "") {
+                const currentItem = shayariList.find(i => i.id === docId);
+                if (currentItem) existingImage = currentItem.image || "";
+            }
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const imageDataUrl = e.target.result;
+                    await processDBSave(docId, category, imageDataUrl, text);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                await processDBSave(docId, category, existingImage, text);
+            }
+        };
+
+        async function processDBSave(docId, category, image, text) {
+            try {
+                if (docId === "") {
+                    await addDoc(collection(db, "shayaris"), {
+                        category,
+                        image,
+                        text,
+                        likes: 0,
+                        views: 1,
+                        comments: [],
+                        createdAt: new Date()
+                    });
+                    alert("शायरी सफलतापूर्वक पब्लिश हो गई!");
+                } else {
+                    const shayariRef = doc(db, "shayaris", docId);
+                    await updateDoc(shayariRef, { category, image, text });
+                    alert("शायरी सफलतापूर्वक अपडेट हो गई!");
+                }
+                closeAddModal();
+                loadShayari();
+            } catch (e) {
+                console.error("Error saving data: ", e);
+                alert("डेटा सेव करने में एरर आया! कृपया अपने Firestore Database Rules चेक करें कि वहाँ 'allow read, write: if true;' सेट है या नहीं।");
+            }
+        }
+
+        window.likeShayari = async function(docId) {
+            try {
+                const ref = doc(db, "shayaris", docId);
+                await updateDoc(ref, { likes: increment(1) });
+                loadShayari();
+            } catch (e) {
+                console.error("Error liking: ", e);
+            }
+        };
+
+        window.deleteShayari = async function(docId) {
+            if (!isLoggedIn) { alert("अनुमति नहीं है!"); return; }
+            if (confirm("क्या आप वाकई इस पोस्ट को डिलीट करना चाहते हैं?")) {
+                try {
+                    await deleteDoc(doc(db, "shayaris", docId));
+                    loadShayari();
+                } catch (e) {
+                    console.error("Error deleting: ", e);
+                }
+            }
+        };
+
+        window.addComment = async function(docId) {
+            const nameInput = document.getElementById(`c-name-${docId}`);
+            const textInput = document.getElementById(`c-text-${docId}`);
+            const name = nameInput.value.trim() || "अज्ञात यूजर";
+            const text = textInput.value.trim();
+            if (!text) { alert("कृपया कमेंट बॉक्स में कुछ लिखें!"); return; }
+            
+            try {
+                const targetItem = shayariList.find(i => i.id === docId);
+                const updatedComments = targetItem.comments ? [...targetItem.comments, { name, text }] : [{ name, text }];
+                
+                const ref = doc(db, "shayaris", docId);
+                await updateDoc(ref, { comments: updatedComments });
+                loadShayari();
+            } catch (e) {
+                console.error("Error adding comment: ", e);
+            }
+        };
+
+        window.filterShayari = function() {
+            const queryText = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('categoryFilter').value;
+            const filtered = shayariList.filter(item => {
+                let matchCat = (cat === 'ALL' || item.category === cat);
+                let matchText = (item.text || '').toLowerCase().includes(queryText);
+                return matchCat && matchText;
+            });
+            loadShayari(filtered);
+        };
+
+        window.refreshShayari = function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = 'ALL';
+            loadShayari();
+        };
+
+        window.handleLogoClick = function() {
+            logoClickCount++;
+            if (logoClickCount === 3) {
+                logoClickCount = 0;
+                openLoginModal();
+            }
+            setTimeout(() => { logoClickCount = 0; }, 1000);
+        };
+
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'a') {
+                event.preventDefault();
+                openLoginModal();
+            }
+        });
+
+        window.toggleTheme = function() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            if (isLight) {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('themeToggleBtn').innerText = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeToggleBtn').innerText = '☀';
+            }
+        };
+
+        window.openLoginModal = function() {
+            if (isLoggedIn) {
+                if (confirm("लॉग आउट करना चाहते हैं?")) {
+                    isLoggedIn = false;
+                    localStorage.removeItem('omniaura_loggedin');
+                    loadShayari();
+                    alert("लॉग आउट हो गए।");
+                }
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        };
+        window.closeLoginModal = function() { document.getElementById('loginModal').style.display = 'none'; };
+
+        window.requestOTP = function() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+            
+            if (user === "omniaura.in" && pass === "ganeshbalram") {
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                let templateParams = { passcode: generatedOTP, to_email: "omniaur@gmail.com" };
+
+                alert("OTP भेजा जा रहा है, कृपया प्रतीक्षा करें...");
+                emailjs.send('Dark_shayari', 'template_wzjouy4', templateParams)
+                    .then(function() {
+                        alert("OTP आपके जीमेल पर भेज दिया गया है!");
+                        document.getElementById('loginStep1').style.display = 'none';
+                        document.getElementById('loginStep2').style.display = 'block';
+                    }, function(error) {
+                        alert("OTP भेजने में एरर आया।");
+                    });
+            } else {
+                alert("गलत यूजरनेम या पासवर्ड!");
+            }
+        };
+
+        window.verifyOTP = function() {
+            if (document.getElementById('otpInput').value.trim() === generatedOTP) {
+                isLoggedIn = true;
+                localStorage.setItem('omniaura_loggedin', 'true');
+                alert("लॉगिन सफल रहा! अब आप नई पोस्ट जोड़ सकते हैं।");
+                closeLoginModal();
+                loadShayari();
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('otpInput').value = '';
+                document.getElementById('loginStep1').style.display = 'block';
+                document.getElementById('loginStep2').style.display = 'none';
+            } else {
+                alert("गलत OTP!");
+            }
+        };
+
+        window.openAddModal = function() {
+            if (!isLoggedIn) { alert("अनुमति नहीं है!"); return; }
+            document.getElementById('modalTitle').innerText = "नई पोस्ट पब्लिश करें";
+            document.getElementById('saveBtn').innerText = "पब्लिश करें";
+            document.getElementById('editDocId').value = "";
+            document.getElementById('newCategory').value = "Dark Shayari";
+            document.getElementById('imageFileInput').value = "";
+            document.getElementById('newText').value = "";
+            document.getElementById('addModal').style.display = 'flex';
+        };
+
+        window.openEditModal = function(docId) {
+            if (!isLoggedIn) { alert("अनुमति नहीं है!"); return; }
+            const item = shayariList.find(i => i.id === docId);
+            if (!item) return;
+            document.getElementById('modalTitle').innerText = "शायरी एडिट करें";
+            document.getElementById('saveBtn').innerText = "अपडेट करें";
+            document.getElementById('editDocId').value = docId;
+            document.getElementById('newCategory').value = item.category || "Dark Shayari";
+            document.getElementById('imageFileInput').value = "";
+            document.getElementById('newText').value = item.text || "";
+            document.getElementById('addModal').style.display = 'flex';
+        };
+
+        window.closeAddModal = function() { document.getElementById('addModal').style.display = 'none'; };
+
+        window.copyText = function(encodedText) {
+            navigator.clipboard.writeText(decodeURIComponent(encodedText)).then(() => {
+                alert("शायरी कॉपी हो गई!");
+            });
+        };
+
+        window.onload = function() {
+            loadShayari();
+        };
+    </script>
+</body>
+</html>
